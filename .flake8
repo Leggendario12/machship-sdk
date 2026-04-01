@@ -1,0 +1,27 @@
+[flake8]
+max-line-length = 88
+extend-ignore = E203, W503
+exclude =
+    .git,
+    __pycache__,
+    build,
+    dist,
+    .venv,
+    .pytest_cache,
+    src/machship_sdk/models/generated.py
+
+# D100: Missing docstring in public module
+# D101: Missing docstring in public class
+# D102: Missing docstring in public method
+# D103: Missing docstring in public function
+# D104: Missing docstring in public package
+# D105: Missing docstring in magic method
+# D106: Missing docstring in public nested class
+# D107: Missing docstring in __init__
+
+per-file-ignores =
+    # Generated models are schema-derived; keep docstring and import noise ignored
+    # because not every schema element has descriptions and the file is regenerated.
+    src/machship_sdk/models/generated.py: D101, D102, D103, E501, F401, F403, F405
+    # Tests don't strictly need docstrings for every function
+    tests/*: D100, D101, D102, D103

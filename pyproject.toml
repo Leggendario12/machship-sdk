@@ -1,0 +1,75 @@
+[project]
+name = "machship-sdk"
+version = "0.1.0"
+description = "Unofficial MachShip SDK built with httpx and Pydantic"
+license = { file = "LICENSE" }
+readme = "README.md"
+authors = [
+    { name = "Daniel Montecillo", email = "daniel.montecillo@montecillo.ca" }
+]
+requires-python = ">=3.13"
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+]
+dependencies = [
+    "httpx>=0.28.1",
+    "pydantic>=2.11.0",
+]
+
+[project.optional-dependencies]
+settings = [
+    "pydantic-settings",
+]
+retries = [
+    "tenacity",
+]
+logging = [
+    "structlog",
+]
+telemetry = [
+    "opentelemetry-sdk",
+    "opentelemetry-instrumentation-httpx",
+]
+cache = [
+    "cachetools",
+]
+json = [
+    "orjson",
+]
+testing = [
+    "respx",
+]
+all = [
+    "pydantic-settings",
+    "tenacity",
+    "structlog",
+    "opentelemetry-sdk",
+    "opentelemetry-instrumentation-httpx",
+    "cachetools",
+    "orjson",
+    "respx",
+]
+
+[dependency-groups]
+dev = [
+    "datamodel-code-generator>=0.55.0",
+    "cachetools",
+    "opentelemetry-instrumentation-httpx",
+    "opentelemetry-sdk",
+    "flake8>=7.3.0",
+    "flake8-bugbear>=25.11.29",
+    "flake8-comprehensions>=3.17.0",
+    "flake8-docstrings>=1.7.0",
+    "flake8-simplify>=0.30.0",
+    "pytest-cov>=7.0.0",
+    "orjson",
+    "pydantic-settings",
+    "respx",
+    "pytest>=8.3.0",
+    "structlog",
+    "tenacity",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
