@@ -282,6 +282,29 @@ The schema descriptions populate class and field docstrings where the OpenAPI
 spec provides them. The generated file is checked in, so it should be
 regenerated rather than edited by hand.
 
+## Publishing To PyPI
+
+Recommended release flow:
+
+1. Bump `version` in `pyproject.toml`.
+2. Run `uv run pytest`.
+3. Run `uv run python -m build`.
+4. Run `uv run twine check dist/*`.
+5. Configure a PyPI trusted publisher for this repository:
+   - Owner: `Leggendario12`
+   - Repository: `machship-sdk`
+   - Workflow file: `.github/workflows/publish.yml`
+   - Environment: `pypi`
+6. Tag the release and push it:
+
+```bash
+git tag v0.1.1
+git push origin v0.1.1
+```
+
+GitHub Actions will build the sdist and wheel, validate the metadata, and
+publish the release from `.github/workflows/publish.yml`.
+
 ## License
 
 This project is released under the MIT License. See [LICENSE](LICENSE).
