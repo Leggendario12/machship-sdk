@@ -118,6 +118,66 @@ def test_live_pricing_serializes_and_parses_response() -> None:
     assert response.rates[0].carrier_name == "GJ Freight (GJF)"
 
 
+def test_live_pricing_accepts_list_wrapped_response() -> None:
+    """FusedShip can return the live-pricing payload wrapped in a list."""
+
+    client = FusedShipClient(
+        FusedShipConfig(
+            token="fused-token",
+            integration_id="integration-123",
+        ),
+        transport=httpx.MockTransport(
+            lambda request: httpx.Response(
+                200,
+                json=[
+                    {
+                        "rates": [
+                            {
+                                "service_name": "Residential Shipping",
+                                "carrier_id": "513",
+                                "carrier_name": "GJ Freight (GJF)",
+                                "carrier_service_id": "15329",
+                                "carrier_service_name": "Semi",
+                                "questionIds": ["13", "7"],
+                                "total_price_exc_tax": 28.08,
+                                "total_price": 28.08,
+                                "currency": "AUD",
+                            }
+                        ],
+                        "quoted_items": [],
+                        "is_error": False,
+                        "error_message": None,
+                    }
+                ],
+            )
+        ),
+    )
+
+    response = client.quote_live_pricing("your_platform", _build_request())
+
+    assert response.rates[0].carrier_id == "513"
+    assert response.rates[0].carrier_name == "GJ Freight (GJF)"
+
+
+def test_live_pricing_accepts_empty_list_wrapped_response() -> None:
+    """An empty list payload should fall back to the default response model."""
+
+    client = FusedShipClient(
+        FusedShipConfig(
+            token="fused-token",
+            integration_id="integration-123",
+        ),
+        transport=httpx.MockTransport(
+            lambda request: httpx.Response(200, json=[])
+        ),
+    )
+
+    response = client.quote_live_pricing("your_platform", _build_request())
+
+    assert response.rates == []
+    assert response.quoted_items == []
+
+
 def test_request_token_and_iframe_url() -> None:
     client = FusedShipClient(
         FusedShipConfig(

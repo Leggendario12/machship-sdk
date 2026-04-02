@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class FusedShipBaseModel(BaseModel):
@@ -101,6 +101,16 @@ class FusedShipLivePricingResponse(FusedShipBaseModel):
 
     rates: list[FusedShipLivePricingRate] = Field(default_factory=list)
     quoted_items: list[FusedShipQuotedItem] = Field(default_factory=list)
+
+    @model_validator(mode="before")
+    @classmethod
+    def _unwrap_list_response(cls, value: Any) -> Any:
+        """Handle the list-wrapped live pricing payload returned by FusedShip."""
+        if isinstance(value, list):
+            if not value:
+                return {}
+            return value[0]
+        return value
 
 
 class FusedShipRequestTokenRequest(FusedShipBaseModel):
