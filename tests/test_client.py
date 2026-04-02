@@ -16,7 +16,14 @@ from machship_sdk import (
     MachShipConfig,
     MachShipValidationError,
 )
-from machship_sdk.models import CreateConsignmentItemV2, RouteRequest
+from machship_sdk.models import (
+    CreateConsignmentItemV2,
+    LocationSearchOptions,
+    LocationSearchOptionsV2,
+    RawLocation,
+    RawLocationsWithLocationSearchOptions,
+    RouteRequest,
+)
 
 
 def test_route_request_serializes_camel_case_and_parses_response() -> None:
@@ -73,6 +80,94 @@ def test_route_request_serializes_camel_case_and_parses_response() -> None:
     assert response.object.id == UUID("123e4567-e89b-12d3-a456-426614174000")
 
 
+def test_location_lookup_serializes_and_parses_response() -> None:
+    """Verify location lookup requests serialize and parse cleanly."""
+    lookup_request = RawLocationsWithLocationSearchOptions(
+        raw_locations=[
+            RawLocation(suburb="Melbourne", postcode="3000"),
+        ],
+        location_search_options=LocationSearchOptions(
+            company_id=123,
+            include_post_office_boxes=False,
+        ),
+    )
+    search_request = LocationSearchOptionsV2(
+        company_id=456,
+        include_post_office_boxes=True,
+        retrieval_size=10,
+    )
+
+    seen: dict[str, Any] = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        """Capture the outgoing request and return a valid location response."""
+        if request.url.path == "/apiv2/locations/returnLocations":
+            seen["lookup_method"] = request.method
+            seen["lookup_url"] = str(request.url)
+            seen["lookup_payload"] = json.loads(request.content.decode())
+            return httpx.Response(
+                200,
+                json={
+                    "object": [
+                        {
+                            "id": 1,
+                            "postcode": "3000",
+                            "suburb": "Melbourne",
+                            "locationType": 0,
+                        }
+                    ],
+                    "errors": [],
+                },
+            )
+        if request.url.path == "/apiv2/locations/returnLocationsWithSearchOptions":
+            seen["search_method"] = request.method
+            seen["search_url"] = str(request.url)
+            seen["search_params"] = dict(request.url.params)
+            seen["search_payload"] = json.loads(request.content.decode())
+            return httpx.Response(
+                200,
+                json={
+                    "object": [
+                        {
+                            "id": 2,
+                            "postcode": "3000",
+                            "suburb": "Melbourne",
+                            "locationType": 0,
+                        }
+                    ],
+                    "errors": [],
+                },
+            )
+        raise AssertionError(f"unexpected path: {request.url.path}")
+
+    client = MachShipClient(
+        MachShipConfig(base_url="https://example.com", token="secret"),
+        transport=httpx.MockTransport(handler),
+    )
+
+    lookup_response = client.return_locations(lookup_request)
+    search_response = client.return_locations_with_search_options(
+        search_request,
+        search="Mel 3000",
+    )
+
+    assert seen["lookup_method"] == "POST"
+    assert seen["lookup_url"] == "https://example.com/apiv2/locations/returnLocations"
+    assert seen["lookup_payload"]["rawLocations"][0]["suburb"] == "Melbourne"
+    assert seen["lookup_payload"]["locationSearchOptions"]["companyId"] == 123
+    assert seen["search_method"] == "POST"
+    assert seen["search_url"] == (
+        "https://example.com/apiv2/locations/returnLocationsWithSearchOptions"
+        "?s=Mel+3000"
+    )
+    assert seen["search_params"] == {"s": "Mel 3000"}
+    assert seen["search_payload"]["retrievalSize"] == 10
+    assert lookup_response.object is not None
+    assert lookup_response.object[0].id == 1
+    assert search_response.object is not None
+    assert search_response.object[0].id == 2
+
+
 def test_download_endpoints_return_bytes() -> None:
     """Verify download endpoints return raw byte content."""
     client = MachShipClient(
@@ -118,19 +213,59 @@ def test_async_client_smoke() -> None:
         """Execute the async client request against a mocked response."""
         def handler(request: httpx.Request) -> httpx.Response:
             """Assert the outgoing payload and return a valid response."""
-            payload = json.loads(request.content.decode())
-            assert payload["companyId"] == 123
-            return httpx.Response(
-                200,
-                json={
-                    "object": {
-                        "id": "123e4567-e89b-12d3-a456-426614174001",
-                        "routes": [{}],
-                        "results": [],
+            if request.url.path == "/apiv2/routes/returnroutes":
+                payload = json.loads(request.content.decode())
+                assert payload["companyId"] == 123
+                return httpx.Response(
+                    200,
+                    json={
+                        "object": {
+                            "id": "123e4567-e89b-12d3-a456-426614174001",
+                            "routes": [{}],
+                            "results": [],
+                        },
+                        "errors": [],
                     },
-                    "errors": [],
-                },
-            )
+                )
+            if request.url.path == "/apiv2/locations/returnLocations":
+                payload = json.loads(request.content.decode())
+                assert payload["rawLocations"][0]["suburb"] == "Melbourne"
+                return httpx.Response(
+                    200,
+                    json={
+                        "object": [
+                            {
+                                "id": 3,
+                                "postcode": "3000",
+                                "suburb": "Melbourne",
+                                "locationType": 0,
+                            }
+                        ],
+                        "errors": [],
+                    },
+                )
+            if (
+                request.url.path
+                == "/apiv2/locations/returnLocationsWithSearchOptions"
+            ):
+                payload = json.loads(request.content.decode())
+                assert payload["retrievalSize"] == 5
+                assert request.url.params.get("s") == "Mel 3000"
+                return httpx.Response(
+                    200,
+                    json={
+                        "object": [
+                            {
+                                "id": 4,
+                                "postcode": "3000",
+                                "suburb": "Melbourne",
+                                "locationType": 0,
+                            }
+                        ],
+                        "errors": [],
+                    },
+                )
+            raise AssertionError(f"unexpected path: {request.url.path}")
 
         client = AsyncMachShipClient(
             MachShipConfig(base_url="https://example.com", token="secret"),
@@ -146,6 +281,25 @@ def test_async_client_smoke() -> None:
         )
         assert response.object is not None
         assert response.object.id == UUID("123e4567-e89b-12d3-a456-426614174001")
+        lookup_response = await client.return_locations(
+            RawLocationsWithLocationSearchOptions(
+                raw_locations=[
+                    RawLocation(suburb="Melbourne", postcode="3000"),
+                ],
+                location_search_options=LocationSearchOptions(company_id=123),
+            )
+        )
+        assert lookup_response.object is not None
+        assert lookup_response.object[0].id == 3
+        search_response = await client.return_locations_with_search_options(
+            LocationSearchOptionsV2(
+                company_id=456,
+                retrieval_size=5,
+            ),
+            search="Mel 3000",
+        )
+        assert search_response.object is not None
+        assert search_response.object[0].id == 4
         await client.aclose()
 
     asyncio.run(run())

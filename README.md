@@ -109,6 +109,36 @@ machship_client = MachShipClient(app_settings.to_machship_config())
 fusedship_config = app_settings.to_fusedship_config()
 ```
 
+## Location Lookup
+
+MachShip exposes suburb and postcode lookup endpoints rather than a full
+street-address verifier. You can use them to match raw locations or search by
+suburb/postcode text:
+
+```python
+from machship_sdk import MachShipClient
+from machship_sdk.models import (
+    LocationSearchOptions,
+    LocationSearchOptionsV2,
+    RawLocation,
+    RawLocationsWithLocationSearchOptions,
+)
+
+client = MachShipClient.from_env()
+
+verified_locations = client.return_locations(
+    RawLocationsWithLocationSearchOptions(
+        raw_locations=[RawLocation(suburb="Melbourne", postcode="3000")],
+        location_search_options=LocationSearchOptions(company_id=123),
+    )
+)
+
+search_results = client.return_locations_with_search_options(
+    LocationSearchOptionsV2(company_id=123, retrieval_size=10),
+    search="Mel 3000",
+)
+```
+
 ## Usage
 
 ### MachShip

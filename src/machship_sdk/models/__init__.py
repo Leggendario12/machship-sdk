@@ -15,8 +15,15 @@ from .generated import (
     CreateConsignmentResponseV2,
     CreateConsignmentV2,
     FileInfo,
+    LocationSearchOptions,
+    LocationSearchOptionsV2,
+    LocationV2,
+    LocationV2ICollectionBaseDomainEntityV2,
+    LocationV2IEnumerableBaseDomainEntityV2,
     MachshipValidationResultV2,
     ManifestForListWithConsignments,
+    RawLocation,
+    RawLocationsWithLocationSearchOptions,
     RouteRequestComplexItemsV2,
     RouteRequestV2,
     RoutesResponseV2,
@@ -33,6 +40,7 @@ QuoteRequestComplex = RouteRequestComplexItemsV2
 Consignment = ConsignmentV2
 Company = CompanyV2
 CompanyLocation = CompanyLocationV2
+Location = LocationV2
 Carrier = CarrierWithAccountsAndServicesLite
 CarrierAccount = CarrierAccountLite
 CarrierService = CarrierServiceLite
@@ -52,6 +60,13 @@ __all__ = [
     "ConsignmentV2",
     "CompanyV2",
     "CompanyLocationV2",
+    "LocationSearchOptions",
+    "LocationSearchOptionsV2",
+    "LocationV2",
+    "LocationV2ICollectionBaseDomainEntityV2",
+    "LocationV2IEnumerableBaseDomainEntityV2",
+    "RawLocation",
+    "RawLocationsWithLocationSearchOptions",
     "CarrierWithAccountsAndServicesLite",
     "CarrierAccountLite",
     "CarrierServiceLite",
@@ -69,6 +84,7 @@ __all__ = [
     "Consignment",
     "Company",
     "CompanyLocation",
+    "Location",
     "Carrier",
     "CarrierAccount",
     "CarrierService",

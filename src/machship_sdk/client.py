@@ -38,11 +38,15 @@ from .models.generated import (
     CreateConsignmentV2,
     EmptyDomainEntityV2,
     FileInfoBaseDomainEntityV2,
+    LocationSearchOptionsV2,
+    LocationV2ICollectionBaseDomainEntityV2,
+    LocationV2IEnumerableBaseDomainEntityV2,
     ManifestForListWithConsignmentsGridDomainEntityV2,
     ManifestRebooking,
     ManualTrackingStatus,
     RebookedPickupBaseDomainEntityV2,
     ReturnBookedManifestV2ICollectionBaseDomainEntityV2,
+    RawLocationsWithLocationSearchOptions,
     RouteRequestComplexItemsV2,
     RouteRequestV2,
     RoutesResponseV2ArrayBaseDomainEntityV2,
@@ -491,6 +495,33 @@ class MachShipClient:
             response_model=(
                 CarrierWithAccountsAndServicesLiteIEnumerableBaseDomainEntityV2
             ),
+        )
+
+    def return_locations(
+        self,
+        request: RawLocationsWithLocationSearchOptions,
+    ) -> LocationV2ICollectionBaseDomainEntityV2:
+        """Return MachShip locations that exactly match suburb and postcode pairs."""
+        return self.request(
+            "POST",
+            "/apiv2/locations/returnLocations",
+            json=request,
+            response_model=LocationV2ICollectionBaseDomainEntityV2,
+        )
+
+    def return_locations_with_search_options(
+        self,
+        request: LocationSearchOptionsV2,
+        *,
+        search: str | None = None,
+    ) -> LocationV2IEnumerableBaseDomainEntityV2:
+        """Search for MachShip locations using a search string and filter options."""
+        return self.request(
+            "POST",
+            "/apiv2/locations/returnLocationsWithSearchOptions",
+            params={"s": search},
+            json=request,
+            response_model=LocationV2IEnumerableBaseDomainEntityV2,
         )
 
     def return_routes(

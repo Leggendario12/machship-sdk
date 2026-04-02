@@ -17,6 +17,10 @@ from machship_sdk.models import (
     CreateConsignmentComplexRequest,
     CreateConsignmentItemV2,
     CreateConsignmentRequest,
+    LocationSearchOptions,
+    LocationSearchOptionsV2,
+    RawLocation,
+    RawLocationsWithLocationSearchOptions,
     RouteRequest,
     RouteRequestComplex,
 )
@@ -167,6 +171,19 @@ def _machship_manifest_rebooking() -> ManifestRebooking:
     return ManifestRebooking(manifest_id=1)
 
 
+def _machship_location_lookup_request() -> RawLocationsWithLocationSearchOptions:
+    """Return a minimal location lookup payload."""
+    return RawLocationsWithLocationSearchOptions(
+        raw_locations=[RawLocation(suburb="Melbourne", postcode="3000")],
+        location_search_options=LocationSearchOptions(company_id=1),
+    )
+
+
+def _machship_location_search_request() -> LocationSearchOptionsV2:
+    """Return a minimal location search payload."""
+    return LocationSearchOptionsV2(company_id=1, retrieval_size=10)
+
+
 def _fusedship_request_token_request() -> FusedShipRequestTokenRequest:
     """Return a minimal FusedShip request-token payload."""
     return FusedShipRequestTokenRequest(
@@ -195,6 +212,8 @@ def _assert_machship_wrapper_paths(
         "/apiv2/authenticate/ping",
         "/apiv2/companies/getAll",
         "/apiv2/companies/getAvailableCarriersAccountsAndServices",
+        "/apiv2/locations/returnLocations",
+        "/apiv2/locations/returnLocationsWithSearchOptions",
         "/apiv2/routes/returnroutes",
         "/apiv2/routes/returnroutes",
         "/apiv2/routes/returnmultipleroutes",
@@ -337,6 +356,13 @@ def test_machship_client_from_env_and_wrappers(monkeypatch) -> None:
         assert client.get_available_carriers_accounts_and_services(
             company_id=11,
         )["path"] == "/apiv2/companies/getAvailableCarriersAccountsAndServices"
+        assert client.return_locations(
+            _machship_location_lookup_request(),
+        )["path"] == "/apiv2/locations/returnLocations"
+        assert client.return_locations_with_search_options(
+            _machship_location_search_request(),
+            search="Mel 3000",
+        )["path"] == "/apiv2/locations/returnLocationsWithSearchOptions"
         assert client.return_routes(_machship_route_request())["path"] == (
             "/apiv2/routes/returnroutes"
         )
@@ -430,7 +456,10 @@ def test_machship_client_from_env_and_wrappers(monkeypatch) -> None:
 
         _assert_machship_wrapper_paths(request_calls, byte_calls)
     assert request_calls[1]["params"] == {"atOrBelowCompanyId": 10}
-    assert request_calls[5]["json"] == [
+    assert request_calls[3]["json"] == _machship_location_lookup_request()
+    assert request_calls[4]["params"] == {"s": "Mel 3000"}
+    assert request_calls[4]["json"] == _machship_location_search_request()
+    assert request_calls[7]["json"] == [
         _machship_route_request(),
         _machship_route_request(),
     ]
@@ -471,6 +500,19 @@ def test_async_machship_client_from_env_and_wrappers(monkeypatch) -> None:
                     company_id=11,
                 )
             )["path"] == "/apiv2/companies/getAvailableCarriersAccountsAndServices"
+            assert (
+                await client.return_locations(
+                    _machship_location_lookup_request(),
+                )
+            )["path"] == "/apiv2/locations/returnLocations"
+            assert (
+                await client.return_locations_with_search_options(
+                    _machship_location_search_request(),
+                    search="Mel 3000",
+                )
+            )["path"] == (
+                "/apiv2/locations/returnLocationsWithSearchOptions"
+            )
             assert (await client.return_routes(_machship_route_request()))["path"] == (
                 "/apiv2/routes/returnroutes"
             )
