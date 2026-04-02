@@ -5,7 +5,7 @@
 Unofficial Python SDK for MachShip integrations
 
 ![Unofficial](https://img.shields.io/badge/Project-unofficial-critical)
-[![Python 3.13+](https://img.shields.io/badge/Python-3.13%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![pip install](https://img.shields.io/badge/pip-machship--sdk-2ea44f?logo=pypi&logoColor=white)](#install)
 ![Community maintained](https://img.shields.io/badge/Status-community%20maintained-orange)
 
