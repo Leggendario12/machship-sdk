@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime
 from enum import IntEnum
 from typing import Annotated, Any
 from uuid import UUID
@@ -2198,7 +2199,7 @@ class RouteDespatchOptionLite(MachShipBaseModel):
         extra='ignore',
     )
     despatch_date_local: Annotated[
-        AwareDatetime | None, Field(alias='despatchDateLocal')
+        datetime | None, Field(alias='despatchDateLocal')
     ] = None
     """
     The despatch date in the local time of the point of despatch
@@ -2211,7 +2212,7 @@ class RouteDespatchOptionLite(MachShipBaseModel):
     The despatch date in UTC
     """
 
-    eta_local: Annotated[AwareDatetime | None, Field(alias='etaLocal')] = None
+    eta_local: Annotated[datetime | None, Field(alias='etaLocal')] = None
     """
     The Estimated Time of Arrival in the local time of the point of delivery
     """
@@ -3617,7 +3618,7 @@ class ConsignmentTrackingHistoryV2(MachShipBaseModel):
         ConsignmentTrackingStatusV2 | None, Field(alias='consignmentTrackingStatus')
     ] = None
     status_date_local: Annotated[
-        AwareDatetime | None, Field(alias='statusDateLocal')
+        datetime | None, Field(alias='statusDateLocal')
     ] = None
     status_date_utc: Annotated[AwareDatetime | None, Field(alias='statusDateUtc')] = (
         None
@@ -3816,12 +3817,12 @@ class CreateConsignmentResponseV2(MachShipBaseModel):
     """
 
     despatch_date_local: Annotated[
-        AwareDatetime | None, Field(alias='despatchDateLocal')
+        datetime | None, Field(alias='despatchDateLocal')
     ] = None
     despatch_date_utc: Annotated[
         AwareDatetime | None, Field(alias='despatchDateUtc')
     ] = None
-    eta_local: Annotated[AwareDatetime | None, Field(alias='etaLocal')] = None
+    eta_local: Annotated[datetime | None, Field(alias='etaLocal')] = None
     eta_utc: Annotated[AwareDatetime | None, Field(alias='etaUtc')] = None
     carrier: CarrierLite | None = None
     carrier_service: Annotated[
@@ -3883,7 +3884,7 @@ class CreateConsignmentV2(MachShipBaseModel):
     """
 
     despatch_date_time_local: Annotated[
-        AwareDatetime | None, Field(alias='despatchDateTimeLocal')
+        datetime | None, Field(alias='despatchDateTimeLocal')
     ] = None
     """
     Optional: The local despatch datetime that was provided in the route. This datetime must be local to the pickup location. If the DespatchDateTimeUtc is provided, this does not need to be set. If no time is set, this will default to NOW (pickup local time)
@@ -4067,7 +4068,7 @@ class CreatePendingConsignmentV2(MachShipBaseModel):
     """
 
     despatch_date_time_local: Annotated[
-        AwareDatetime | None, Field(alias='despatchDateTimeLocal')
+        datetime | None, Field(alias='despatchDateTimeLocal')
     ] = None
     """
     Optional: The local despatch datetime that was provided in the route. This datetime must be local to the pickup location. If the DespatchDateTimeUtc is provided, this does not need to be set. If no time is set, this will default to NOW (pickup local time)
@@ -4250,12 +4251,12 @@ class CreateQuoteResponseV2(MachShipBaseModel):
     """
 
     despatch_date_local: Annotated[
-        AwareDatetime | None, Field(alias='despatchDateLocal')
+        datetime | None, Field(alias='despatchDateLocal')
     ] = None
     despatch_date_utc: Annotated[
         AwareDatetime | None, Field(alias='despatchDateUtc')
     ] = None
-    eta_local: Annotated[AwareDatetime | None, Field(alias='etaLocal')] = None
+    eta_local: Annotated[datetime | None, Field(alias='etaLocal')] = None
     eta_utc: Annotated[AwareDatetime | None, Field(alias='etaUtc')] = None
     carrier: CarrierLite | None = None
     carrier_service: Annotated[
@@ -4286,7 +4287,7 @@ class CreateQuoteV2(MachShipBaseModel):
     """
 
     despatch_date_time_local: Annotated[
-        AwareDatetime | None, Field(alias='despatchDateTimeLocal')
+        datetime | None, Field(alias='despatchDateTimeLocal')
     ] = None
     """
     Optional: The local despatch datetime that was provided in the route. This datetime must be local to the pickup location. If the DespatchDateTimeUtc is provided, this does not need to be set. If no time is set, this will default to NOW (pickup local time)
@@ -4603,7 +4604,7 @@ class ManualTrackingStatus(MachShipBaseModel):
 
     status: TrackingStatus | None = None
     status_date_time_local: Annotated[
-        AwareDatetime | None, Field(alias='statusDateTimeLocal')
+        datetime | None, Field(alias='statusDateTimeLocal')
     ] = None
     """
     Optional.
@@ -4791,10 +4792,10 @@ class QuoteV2(MachShipBaseModel):
         AwareDatetime | None, Field(alias='despatchDateUtc')
     ] = None
     despatch_date_local: Annotated[
-        AwareDatetime | None, Field(alias='despatchDateLocal')
+        datetime | None, Field(alias='despatchDateLocal')
     ] = None
     eta: AwareDatetime | None = None
-    eta_local: Annotated[AwareDatetime | None, Field(alias='etaLocal')] = None
+    eta_local: Annotated[datetime | None, Field(alias='etaLocal')] = None
     eta_utc: Annotated[AwareDatetime | None, Field(alias='etaUtc')] = None
     from_company_location_id: Annotated[
         int | None, Field(alias='fromCompanyLocationId')
@@ -4876,7 +4877,7 @@ class QuoteV2(MachShipBaseModel):
         AwareDatetime | None, Field(alias='quoteCreatedDateUtc')
     ] = None
     quote_created_date_local: Annotated[
-        AwareDatetime | None, Field(alias='quoteCreatedDateLocal')
+        datetime | None, Field(alias='quoteCreatedDateLocal')
     ] = None
 
 
@@ -4957,7 +4958,7 @@ class RouteRequestV2(MachShipBaseModel):
     """
 
     despatch_date_time_local: Annotated[
-        AwareDatetime | None, Field(alias='despatchDateTimeLocal')
+        datetime | None, Field(alias='despatchDateTimeLocal')
     ] = None
     from_company_location_id: Annotated[
         int | None, Field(alias='fromCompanyLocationId')
@@ -5574,10 +5575,10 @@ class ConsignmentV2(MachShipBaseModel):
         AwareDatetime | None, Field(alias='despatchDateUtc')
     ] = None
     despatch_date_local: Annotated[
-        AwareDatetime | None, Field(alias='despatchDateLocal')
+        datetime | None, Field(alias='despatchDateLocal')
     ] = None
     eta: AwareDatetime | None = None
-    eta_local: Annotated[AwareDatetime | None, Field(alias='etaLocal')] = None
+    eta_local: Annotated[datetime | None, Field(alias='etaLocal')] = None
     eta_utc: Annotated[AwareDatetime | None, Field(alias='etaUtc')] = None
     from_company_location_id: Annotated[
         int | None, Field(alias='fromCompanyLocationId')
@@ -5695,7 +5696,7 @@ class ConsignmentV2(MachShipBaseModel):
         AwareDatetime | None, Field(alias='desiredDespatchDateUtc')
     ] = None
     desired_despatch_date_local: Annotated[
-        AwareDatetime | None, Field(alias='desiredDespatchDateLocal')
+        datetime | None, Field(alias='desiredDespatchDateLocal')
     ] = None
     initial_pricing_route_request_id: Annotated[
         UUID | None, Field(alias='initialPricingRouteRequestId')
@@ -5891,7 +5892,7 @@ class EditConsignmentV2(MachShipBaseModel):
     """
 
     despatch_date_time_local: Annotated[
-        AwareDatetime | None, Field(alias='despatchDateTimeLocal')
+        datetime | None, Field(alias='despatchDateTimeLocal')
     ] = None
     """
     Optional: The local despatch datetime that was provided in the route. This datetime must be local to the pickup location. If the DespatchDateTimeUtc is provided, this does not need to be set. If no time is set, this will default to NOW (pickup local time)
@@ -6527,7 +6528,7 @@ class CreateQuoteComplexItemsV2(MachShipBaseModel):
     """
 
     despatch_date_time_local: Annotated[
-        AwareDatetime | None, Field(alias='despatchDateTimeLocal')
+        datetime | None, Field(alias='despatchDateTimeLocal')
     ] = None
     """
     Optional: The local despatch datetime that was provided in the route. This datetime must be local to the pickup location. If the DespatchDateTimeUtc is provided, this does not need to be set. If no time is set, this will default to NOW (pickup local time)
@@ -6705,7 +6706,7 @@ class RouteRequestComplexItemsV2(MachShipBaseModel):
     """
 
     despatch_date_time_local: Annotated[
-        AwareDatetime | None, Field(alias='despatchDateTimeLocal')
+        datetime | None, Field(alias='despatchDateTimeLocal')
     ] = None
     from_company_location_id: Annotated[
         int | None, Field(alias='fromCompanyLocationId')
@@ -6914,7 +6915,7 @@ class CreateConsignmentComplexItemsV2(MachShipBaseModel):
     """
 
     despatch_date_time_local: Annotated[
-        AwareDatetime | None, Field(alias='despatchDateTimeLocal')
+        datetime | None, Field(alias='despatchDateTimeLocal')
     ] = None
     """
     Optional: The local despatch datetime that was provided in the route. This datetime must be local to the pickup location. If the DespatchDateTimeUtc is provided, this does not need to be set. If no time is set, this will default to NOW (pickup local time)
@@ -7146,7 +7147,7 @@ class CreateConsignmentExistingV2(MachShipBaseModel):
     """
 
     despatch_date_time_local: Annotated[
-        AwareDatetime | None, Field(alias='despatchDateTimeLocal')
+        datetime | None, Field(alias='despatchDateTimeLocal')
     ] = None
     """
     Optional: The local despatch datetime that was provided in the route. This datetime must be local to the pickup location. If the DespatchDateTimeUtc is provided, this does not need to be set. If no time is set, this will default to NOW (pickup local time)
@@ -9215,16 +9216,16 @@ class Consignment(MachShipBaseModel):
         AwareDatetime | None, Field(alias='despatchDateUtc')
     ] = None
     despatch_date_local: Annotated[
-        AwareDatetime | None, Field(alias='despatchDateLocal')
+        datetime | None, Field(alias='despatchDateLocal')
     ] = None
     despatch_date_local_date_only: Annotated[
-        AwareDatetime | None, Field(alias='despatchDateLocalDateOnly')
+        datetime | None, Field(alias='despatchDateLocalDateOnly')
     ] = None
     desired_despatch_date_utc: Annotated[
         AwareDatetime | None, Field(alias='desiredDespatchDateUtc')
     ] = None
     desired_despatch_date_local: Annotated[
-        AwareDatetime | None, Field(alias='desiredDespatchDateLocal')
+        datetime | None, Field(alias='desiredDespatchDateLocal')
     ] = None
     friendly_despatch_date: Annotated[
         str | None, Field(alias='friendlyDespatchDate')
@@ -9233,7 +9234,7 @@ class Consignment(MachShipBaseModel):
         str | None, Field(alias='friendlyDespatchTime')
     ] = None
     eta: AwareDatetime | None = None
-    eta_local: Annotated[AwareDatetime | None, Field(alias='etaLocal')] = None
+    eta_local: Annotated[datetime | None, Field(alias='etaLocal')] = None
     eta_utc: Annotated[AwareDatetime | None, Field(alias='etaUtc')] = None
     from_company_location_id: Annotated[
         int | None, Field(alias='fromCompanyLocationId')
@@ -9382,10 +9383,10 @@ class Consignment(MachShipBaseModel):
         None
     )
     original_eta_local: Annotated[
-        AwareDatetime | None, Field(alias='originalEtaLocal')
+        datetime | None, Field(alias='originalEtaLocal')
     ] = None
     cutoff_utc: Annotated[AwareDatetime | None, Field(alias='cutoffUtc')] = None
-    cutoff_local: Annotated[AwareDatetime | None, Field(alias='cutoffLocal')] = None
+    cutoff_local: Annotated[datetime | None, Field(alias='cutoffLocal')] = None
     eta_affected_by_public_holidays: Annotated[
         bool | None, Field(alias='etaAffectedByPublicHolidays')
     ] = None
@@ -10243,7 +10244,7 @@ class ConsignmentsForListWithPendingConsignmentIds(MachShipBaseModel):
         AwareDatetime | None, Field(alias='desiredDespatchDateUtc')
     ] = None
     desired_despatch_date_local: Annotated[
-        AwareDatetime | None, Field(alias='desiredDespatchDateLocal')
+        datetime | None, Field(alias='desiredDespatchDateLocal')
     ] = None
 
 
@@ -10274,7 +10275,7 @@ class ConsolidatedConsignment(MachShipBaseModel):
         bool | None, Field(alias='isPendingConsignment')
     ] = None
     despatch_date_local: Annotated[
-        AwareDatetime | None, Field(alias='despatchDateLocal')
+        datetime | None, Field(alias='despatchDateLocal')
     ] = None
     despatch_date_utc: Annotated[
         AwareDatetime | None, Field(alias='despatchDateUtc')
@@ -10665,7 +10666,7 @@ class ManifestForListWithConsignments(MachShipBaseModel):
         str | None, Field(alias='pickupNameAndLocation')
     ] = None
     despatch_date_local: Annotated[
-        AwareDatetime | None, Field(alias='despatchDateLocal')
+        datetime | None, Field(alias='despatchDateLocal')
     ] = None
     total: float | None = None
     carrier_name: Annotated[str | None, Field(alias='carrierName')] = None

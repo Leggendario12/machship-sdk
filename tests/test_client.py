@@ -80,6 +80,64 @@ def test_route_request_serializes_camel_case_and_parses_response() -> None:
     assert response.object.id == UUID("123e4567-e89b-12d3-a456-426614174000")
 
 
+def test_route_request_parses_local_despatch_datetimes() -> None:
+    """Verify MachShip local timestamps parse without timezone info."""
+    request_body = RouteRequest(
+        companyId=123,
+        fromCompanyLocationId=456,
+        toCompanyLocationId=789,
+        items=[
+            CreateConsignmentItemV2(
+                companyItemId=42,
+                quantity=2,
+                weight=3.5,
+            )
+        ],
+    )
+
+    client = MachShipClient(
+        MachShipConfig(base_url="https://example.com", token="secret"),
+        transport=httpx.MockTransport(
+            lambda request: httpx.Response(
+                200,
+                json={
+                    "object": {
+                        "id": "123e4567-e89b-12d3-a456-426614174000",
+                        "routes": [
+                            {
+                                "despatchOptions": [
+                                    {
+                                        "despatchDateLocal": "2026-04-02T00:00:00",
+                                        "despatchDateUtc": "2026-04-02T00:00:00Z",
+                                        "etaLocal": "2026-04-07T23:59:59",
+                                        "etaUtc": "2026-04-07T23:59:59Z",
+                                    }
+                                ]
+                            }
+                        ],
+                        "results": [],
+                    },
+                    "errors": [],
+                },
+            )
+        ),
+    )
+
+    response = client.get_rates(request_body)
+
+    assert response.object is not None
+    assert response.object.routes is not None
+    despatch_option = response.object.routes[0].despatch_options[0]
+    assert despatch_option.despatch_date_local is not None
+    assert despatch_option.despatch_date_local.tzinfo is None
+    assert despatch_option.eta_local is not None
+    assert despatch_option.eta_local.tzinfo is None
+    assert despatch_option.despatch_date_utc is not None
+    assert despatch_option.despatch_date_utc.tzinfo is not None
+    assert despatch_option.eta_utc is not None
+    assert despatch_option.eta_utc.tzinfo is not None
+
+
 def test_location_lookup_serializes_and_parses_response() -> None:
     """Verify location lookup requests serialize and parse cleanly."""
     lookup_request = RawLocationsWithLocationSearchOptions(
