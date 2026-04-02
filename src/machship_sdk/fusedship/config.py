@@ -57,7 +57,10 @@ class FusedShipConfig:
 
     def __post_init__(self) -> None:
         """Post-initialization to normalize the base URL."""
-        object.__setattr__(self, "base_url", self.base_url.rstrip("/"))
+        normalized_base_url = self.base_url.strip().rstrip("/")
+        if "/live-pricing/" in normalized_base_url:
+            normalized_base_url = normalized_base_url.split("/live-pricing/", 1)[0]
+        object.__setattr__(self, "base_url", normalized_base_url)
 
     @classmethod
     def from_env(

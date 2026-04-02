@@ -9,7 +9,10 @@ def test_settings_load_from_environment(monkeypatch) -> None:
     """Load SDK settings from environment variables."""
     monkeypatch.setenv("MACHSHIP_BASE_URL", "https://mach.example.com/")
     monkeypatch.setenv("MACHSHIP_API_TOKEN", "mach-token")
-    monkeypatch.setenv("FUSEDSHIP_BASE_URL", "https://fused.example.com/")
+    monkeypatch.setenv(
+        "FUSEDSHIP_BASE_URL",
+        "https://fused.example.com/live-pricing/generic-liverates/",
+    )
     monkeypatch.setenv("FUSEDSHIP_TOKEN", "fused-token")
     monkeypatch.setenv("FUSEDSHIP_INTEGRATION_ID", "integration-123")
     monkeypatch.setenv("FUSEDSHIP_CLIENT_TOKEN", "client-456")

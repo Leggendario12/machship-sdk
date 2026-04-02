@@ -250,7 +250,10 @@ def test_machship_config_from_env_and_validation(monkeypatch) -> None:
 
 def test_fusedship_config_helpers(monkeypatch) -> None:
     """Load FusedShip config from env and cover credential guards."""
-    monkeypatch.setenv("FUSEDSHIP_BASE_URL", "https://fused.example.com/")
+    monkeypatch.setenv(
+        "FUSEDSHIP_BASE_URL",
+        "https://fused.example.com/live-pricing/generic-liverates/",
+    )
     monkeypatch.setenv("FUSEDSHIP_TOKEN", "fused-token")
     monkeypatch.setenv("FUSEDSHIP_INTEGRATION_ID", "integration-123")
     monkeypatch.setenv("FUSEDSHIP_CLIENT_TOKEN", "client-456")

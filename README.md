@@ -40,7 +40,7 @@ pip install machship-sdk
 If you want to install from git:
 
 ```bash
-pip install "machship-sdk @ git+ssh://git@github.com/<org>/machship-sdk.git@v0.1.4"
+pip install "machship-sdk @ git+ssh://git@github.com/<org>/machship-sdk.git@v0.1.5"
 ```
 
 ## Optional Extras
@@ -328,8 +328,8 @@ Recommended release flow:
 6. Tag the release and push it:
 
 ```bash
-git tag v0.1.4
-git push origin v0.1.4
+git tag v0.1.5
+git push origin v0.1.5
 ```
 
 GitHub Actions will build the sdist and wheel, validate the metadata, and
