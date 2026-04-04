@@ -72,6 +72,7 @@ def test_live_pricing_serializes_and_parses_response() -> None:
     seen: dict[str, Any] = {}
 
     def handler(request: httpx.Request) -> httpx.Response:
+        """Capture the outgoing request and return a valid MachShip response."""
         seen["method"] = request.method
         seen["url"] = str(request.url)
         seen["token"] = request.headers.get("token")
@@ -247,7 +248,9 @@ def test_error_body_raises_api_error() -> None:
 
 def test_async_fusedship_client_smoke() -> None:
     async def run() -> None:
+        """Execute the async client request against a mocked response."""
         def handler(request: httpx.Request) -> httpx.Response:
+            """Assert the outgoing payload and return a valid response."""
             payload = json.loads(request.content.decode())
             assert payload["client_token"] == "client-123"
             assert payload["store_id"] == "store-456"
