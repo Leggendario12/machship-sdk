@@ -1,6 +1,6 @@
 [project]
 name = "machship-sdk"
-version = "0.1.8"
+version = "0.1.9"
 description = "Unofficial MachShip SDK built with httpx and Pydantic"
 license = { file = "LICENSE" }
 readme = "README.md"
