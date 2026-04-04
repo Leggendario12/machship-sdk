@@ -120,8 +120,7 @@ def test_live_pricing_serializes_and_parses_response() -> None:
 
 
 def test_live_pricing_accepts_list_wrapped_response() -> None:
-    """FusedShip can return the live-pricing payload wrapped in a list."""
-
+    """Object FusedShip can return the live-pricing payload wrapped in a list."""
     client = FusedShipClient(
         FusedShipConfig(
             token="fused-token",
@@ -161,8 +160,7 @@ def test_live_pricing_accepts_list_wrapped_response() -> None:
 
 
 def test_live_pricing_parses_error_response_payload() -> None:
-    """FusedShip live-pricing errors should preserve provider messaging."""
-
+    """Object FusedShip live-pricing errors should preserve provider messaging."""
     client = FusedShipClient(
         FusedShipConfig(
             token="fused-token",
@@ -191,7 +189,6 @@ def test_live_pricing_parses_error_response_payload() -> None:
 
 def test_live_pricing_accepts_empty_list_wrapped_response() -> None:
     """An empty list payload should fall back to the default response model."""
-
     client = FusedShipClient(
         FusedShipConfig(
             token="fused-token",
