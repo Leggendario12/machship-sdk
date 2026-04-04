@@ -101,6 +101,8 @@ class FusedShipLivePricingResponse(FusedShipBaseModel):
 
     rates: list[FusedShipLivePricingRate] = Field(default_factory=list)
     quoted_items: list[FusedShipQuotedItem] = Field(default_factory=list)
+    is_error: bool | None = None
+    error_message: str | None = None
 
     @model_validator(mode="before")
     @classmethod

@@ -159,6 +159,35 @@ def test_live_pricing_accepts_list_wrapped_response() -> None:
     assert response.rates[0].carrier_name == "GJ Freight (GJF)"
 
 
+def test_live_pricing_parses_error_response_payload() -> None:
+    """FusedShip live-pricing errors should preserve provider messaging."""
+
+    client = FusedShipClient(
+        FusedShipConfig(
+            token="fused-token",
+            integration_id="integration-123",
+        ),
+        transport=httpx.MockTransport(
+            lambda request: httpx.Response(
+                200,
+                json={
+                    "rates": [],
+                    "quoted_items": [],
+                    "is_error": True,
+                    "error_message": "No prices were found.",
+                },
+            )
+        ),
+    )
+
+    response = client.quote_live_pricing("your_platform", _build_request())
+
+    assert response.rates == []
+    assert response.quoted_items == []
+    assert response.is_error is True
+    assert response.error_message == "No prices were found."
+
+
 def test_live_pricing_accepts_empty_list_wrapped_response() -> None:
     """An empty list payload should fall back to the default response model."""
 
