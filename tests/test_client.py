@@ -24,6 +24,7 @@ from machship_sdk.models import (
     RawLocationsWithLocationSearchOptions,
     RouteRequest,
 )
+from machship_sdk.models.generated import MachshipValidationType
 
 
 def test_route_request_serializes_camel_case_and_parses_response() -> None:
@@ -263,6 +264,44 @@ def test_validation_errors_raise_by_default() -> None:
 
     with pytest.raises(MachShipValidationError):
         client.ping()
+
+
+def test_validation_errors_accept_string_validation_type() -> None:
+    """Verify MachShip's string validation labels parse into enum values."""
+    client = MachShipClient(
+        MachShipConfig(
+            base_url="https://example.com",
+            token="secret",
+            raise_on_api_errors=False,
+        ),
+        transport=httpx.MockTransport(
+            lambda request: httpx.Response(
+                200,
+                json={
+                    "object": True,
+                    "errors": [
+                        {
+                            "memberNames": ["companyId"],
+                            "errorMessage": "Company is required",
+                            "validationType": "Error",
+                        }
+                    ],
+                },
+            )
+        ),
+    )
+
+    response = client.ping()
+
+    assert response.errors is not None
+    assert response.errors[0].validation_type == MachshipValidationType.integer_1
+
+
+def test_validation_type_rejects_unknown_string_labels() -> None:
+    """Verify unknown MachShip labels still fail validation."""
+    with pytest.raises(ValueError):
+        MachshipValidationType("Unknown")
+    assert MachshipValidationType._missing_(99) is None
 
 
 def test_async_client_smoke() -> None:

@@ -1533,6 +1533,19 @@ class MachshipValidationType(IntEnum):
     integer_2 = 2
     integer_3 = 3
 
+    @classmethod
+    def _missing_(cls, value: object) -> MachshipValidationType | None:
+        """Coerce MachShip string enum labels into the generated enum values."""
+        if isinstance(value, str):
+            label_to_value = {
+                "success": cls.integer_0,
+                "error": cls.integer_1,
+                "info": cls.integer_2,
+                "warning": cls.integer_3,
+            }
+            return label_to_value.get(value.strip().casefold())
+        return None
+
 
 class ManifestForListConsignment(MachShipBaseModel):
     model_config = ConfigDict(
