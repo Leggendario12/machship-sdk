@@ -1412,6 +1412,30 @@ class ItemType(IntEnum):
     integer_74 = 74
     integer_75 = 75
 
+    @classmethod
+    def _missing_(cls, value: object) -> ItemType | None:
+        """Coerce MachShip item labels into the generated enum values."""
+        if not isinstance(value, str):
+            return None
+
+        label = value.strip().casefold()
+        if not label:
+            return None
+
+        docstring = cls.__doc__ or ""
+        for entry in docstring.split(","):
+            candidate = entry.strip()
+            if "=" not in candidate:
+                continue
+            number, candidate_label = candidate.split("=", 1)
+            try:
+                enum_value = int(number.strip())
+            except ValueError:
+                continue
+            if candidate_label.strip().casefold() == label:
+                return cls(enum_value)
+        return None
+
 
 class LabelType(IntEnum):
     """

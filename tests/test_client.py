@@ -17,6 +17,7 @@ from machship_sdk import (
     MachShipValidationError,
 )
 from machship_sdk.models import (
+    CreateConsignmentV2,
     CreateConsignmentItemV2,
     LocationSearchOptions,
     LocationSearchOptionsV2,
@@ -24,7 +25,7 @@ from machship_sdk.models import (
     RawLocationsWithLocationSearchOptions,
     RouteRequest,
 )
-from machship_sdk.models.generated import MachshipValidationType
+from machship_sdk.models.generated import ItemType, MachshipValidationType
 
 
 def test_route_request_serializes_camel_case_and_parses_response() -> None:
@@ -302,6 +303,74 @@ def test_validation_type_rejects_unknown_string_labels() -> None:
     with pytest.raises(ValueError):
         MachshipValidationType("Unknown")
     assert MachshipValidationType._missing_(99) is None
+
+
+def test_create_consignment_accepts_string_item_type_and_naive_utc_response() -> None:
+    """Verify create-consignment responses tolerate MachShip's payload shape."""
+    request_body = CreateConsignmentV2(
+        items=[
+            CreateConsignmentItemV2(
+                item_type=1,
+                name="IKNG01526537_420gsm Artboard_stack_2",
+                sku="SKU-001",
+                quantity=1,
+                height=30,
+                weight=2.07,
+                length=5.5,
+                width=19.5,
+            )
+        ]
+    )
+
+    seen: dict[str, Any] = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        """Capture the outgoing request and return a valid MachShip response."""
+        seen["method"] = request.method
+        seen["url"] = str(request.url)
+        seen["payload"] = json.loads(request.content.decode())
+        return httpx.Response(
+            200,
+            json={
+                "object": {
+                    "id": 987654,
+                    "consignmentNumber": "MACH-000123",
+                    "despatchDateUtc": "2026-04-09T14:00:00",
+                    "etaUtc": "2026-04-14T13:59:59",
+                    "items": [
+                        {
+                            "itemType": "Carton",
+                            "name": "IKNG01526537_420gsm Artboard_stack_2",
+                            "sku": "SKU-001",
+                            "quantity": 1,
+                            "height": 30,
+                            "weight": 2.07,
+                            "length": 5.5,
+                            "width": 19.5,
+                        }
+                    ],
+                },
+                "errors": [],
+            },
+        )
+
+    client = MachShipClient(
+        MachShipConfig(base_url="https://example.com", token="secret"),
+        transport=httpx.MockTransport(handler),
+    )
+
+    response = client.create_consignment(request_body)
+
+    assert seen["method"] == "POST"
+    assert seen["url"] == "https://example.com/apiv2/consignments/createConsignment"
+    assert seen["payload"]["items"][0]["itemType"] == 1
+    assert response.object is not None
+    assert response.object.despatch_date_utc is not None
+    assert response.object.despatch_date_utc.tzinfo is not None
+    assert response.object.eta_utc is not None
+    assert response.object.eta_utc.tzinfo is not None
+    assert response.object.items is not None
+    assert response.object.items[0].item_type == ItemType.integer_1
 
 
 def test_async_client_smoke() -> None:
