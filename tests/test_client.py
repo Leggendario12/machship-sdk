@@ -140,6 +140,51 @@ def test_route_request_parses_local_despatch_datetimes() -> None:
     assert despatch_option.eta_utc.tzinfo is not None
 
 
+def test_get_consignment_parses_naive_datetimes() -> None:
+    """Verify consignment responses accept MachShip's naive timestamps."""
+    def handler(request: httpx.Request) -> httpx.Response:
+        """Return a consignment payload that matches the reported failure."""
+        assert request.method == "GET"
+        assert request.url.path == "/apiv2/consignments/getConsignment"
+        return httpx.Response(
+            200,
+            json={
+                "object": {
+                    "id": 64061668,
+                    "consignmentNumber": "MACH-64061668",
+                    "dateCreated": "2026-04-10T12:48:24.473",
+                    "bookedDate": "2026-04-10T12:48:24.43",
+                    "despatchDate": "2026-04-09T14:00:00",
+                    "eta": "2026-04-14T13:59:59",
+                    "despatchDateLocal": "2026-04-09T14:00:00",
+                    "etaLocal": "2026-04-14T13:59:59",
+                },
+                "errors": [],
+            },
+        )
+
+    client = MachShipClient(
+        MachShipConfig(base_url="https://example.com", token="secret"),
+        transport=httpx.MockTransport(handler),
+    )
+
+    response = client.get_consignment(64061668)
+
+    assert response.object is not None
+    assert response.object.date_created is not None
+    assert response.object.date_created.tzinfo is not None
+    assert response.object.booked_date is not None
+    assert response.object.booked_date.tzinfo is not None
+    assert response.object.despatch_date is not None
+    assert response.object.despatch_date.tzinfo is not None
+    assert response.object.eta is not None
+    assert response.object.eta.tzinfo is not None
+    assert response.object.despatch_date_local is not None
+    assert response.object.despatch_date_local.tzinfo is None
+    assert response.object.eta_local is not None
+    assert response.object.eta_local.tzinfo is None
+
+
 def test_location_lookup_serializes_and_parses_response() -> None:
     """Verify location lookup requests serialize and parse cleanly."""
     lookup_request = RawLocationsWithLocationSearchOptions(
