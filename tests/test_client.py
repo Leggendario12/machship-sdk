@@ -350,6 +350,20 @@ def test_validation_type_rejects_unknown_string_labels() -> None:
     assert MachshipValidationType._missing_(99) is None
 
 
+def test_item_type_missing_coerces_and_rejects_inputs(monkeypatch) -> None:
+    """Verify MachShip item labels are coerced and invalid inputs are ignored."""
+    monkeypatch.setattr(
+        ItemType,
+        "__doc__",
+        "NoEquals, bad = Carton, 1 = Carton",
+    )
+
+    assert ItemType._missing_(object()) is None
+    assert ItemType._missing_("   ") is None
+    assert ItemType._missing_("Carton") == ItemType.integer_1
+    assert ItemType._missing_("DoesNotExist") is None
+
+
 def test_create_consignment_accepts_string_item_type_and_naive_utc_response() -> None:
     """Verify create-consignment responses tolerate MachShip's payload shape."""
     request_body = CreateConsignmentV2(

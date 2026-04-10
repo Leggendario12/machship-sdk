@@ -8,10 +8,11 @@ from datetime import date, datetime, time, timezone
 from enum import Enum
 from types import SimpleNamespace
 from uuid import UUID
+from typing import Annotated
 
 import httpx
 import pytest
-from pydantic import BaseModel
+from pydantic import AwareDatetime, BaseModel, Field
 
 from machship_sdk._core import (
     build_headers,
@@ -34,6 +35,12 @@ from machship_sdk.fusedship.exceptions import (
     FusedShipAPIError,
     FusedShipError,
     FusedShipHTTPError,
+)
+from machship_sdk.models.base import (
+    MachShipBaseModel,
+    _annotation_requires_aware_datetime,
+    _coerce_aware_datetime,
+    _normalize_utc_datetime_fields,
 )
 from machship_sdk.logging import emit_log, get_logger
 from machship_sdk.retries import RetryPolicy, run_async_with_retry, run_sync_with_retry
@@ -183,6 +190,53 @@ def test_core_helpers_cover_serialization_branches() -> None:
         SimpleNamespace(errors=[{"errorMessage": "ignored"}]),
         context="test",
         raise_on_api_errors=False,
+    )
+
+
+def test_machship_datetime_helpers_cover_edge_cases() -> None:
+    """Exercise the shared datetime normalization helper branches."""
+    aware = _coerce_aware_datetime(datetime(2026, 4, 10, 12, 30))
+    parsed = _coerce_aware_datetime("2026-04-10T12:30:00")
+    invalid = _coerce_aware_datetime("not-a-datetime")
+    passthrough = object()
+
+    normalized = _normalize_utc_datetime_fields(
+        (
+            {
+                "dateCreatedUtc": "2026-04-10T12:30:00",
+                "nested": [
+                    {"etaUtc": "2026-04-10T13:30:00"},
+                ],
+            },
+        )
+    )
+
+    assert aware.tzinfo is not None
+    assert parsed.tzinfo is not None
+    assert invalid == "not-a-datetime"
+    assert _coerce_aware_datetime(passthrough) is passthrough
+    assert normalized[0]["dateCreatedUtc"].tzinfo is not None
+    assert normalized[0]["nested"][0]["etaUtc"].tzinfo is not None
+
+    assert _annotation_requires_aware_datetime(AwareDatetime) is True
+    assert _annotation_requires_aware_datetime(
+        Annotated[AwareDatetime | None, Field(alias="example")]
+    ) is True
+    assert _annotation_requires_aware_datetime(datetime | None) is False
+
+    assert (
+        MachShipBaseModel._normalize_aware_datetime_fields(  # type: ignore[misc]
+            "kept",
+            SimpleNamespace(field_name=None),
+        )
+        == "kept"
+    )
+    assert (
+        MachShipBaseModel._normalize_aware_datetime_fields(  # type: ignore[misc]
+            "kept",
+            SimpleNamespace(field_name="missing"),
+        )
+        == "kept"
     )
 
 
