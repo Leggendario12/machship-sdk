@@ -11,7 +11,7 @@ from typing import Annotated, Any
 from uuid import UUID
 
 from machship_sdk.models.base import MachShipBaseModel
-from pydantic import AwareDatetime, Base64Str, ConfigDict, Field, SecretStr
+from pydantic import AwareDatetime, Base64Bytes, Base64Str, ConfigDict, Field, SecretStr
 
 
 class Attachment(MachShipBaseModel):
@@ -1063,7 +1063,7 @@ class FileInfo(MachShipBaseModel):
     )
     file_name: Annotated[str | None, Field(alias='fileName')] = None
     content_type: Annotated[str | None, Field(alias='contentType')] = None
-    content: Base64Str | None = None
+    content: Base64Bytes | None = None
 
 
 class FinanceTransactionStatus(IntEnum):

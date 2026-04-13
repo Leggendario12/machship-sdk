@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import base64
 import asyncio
 import json
 from uuid import UUID
@@ -183,6 +184,37 @@ def test_get_consignment_parses_naive_datetimes() -> None:
     assert response.object.despatch_date_local.tzinfo is None
     assert response.object.eta_local is not None
     assert response.object.eta_local.tzinfo is None
+
+
+def test_file_info_parses_binary_pdf_content() -> None:
+    """Verify file-info responses preserve binary PDF content."""
+    pdf_bytes = b"%PDF-1.4\n%\xd3\x00\xff\n"
+    encoded_pdf = base64.b64encode(pdf_bytes).decode("ascii")
+
+    client = MachShipClient(
+        MachShipConfig(base_url="https://example.com", token="secret"),
+        transport=httpx.MockTransport(
+            lambda request: httpx.Response(
+                200,
+                json={
+                    "object": {
+                        "fileName": "machship-label-987654.pdf",
+                        "contentType": "application/pdf",
+                        "content": encoded_pdf,
+                    },
+                    "errors": [],
+                },
+            )
+        ),
+    )
+
+    response = client.get_consignment_pdf_file_info(987654)
+
+    assert response.object is not None
+    assert response.object.file_name == "machship-label-987654.pdf"
+    assert response.object.content_type == "application/pdf"
+    assert response.object.content == pdf_bytes
+    assert response.model_dump(mode="json")["object"]["content"] == encoded_pdf
 
 
 def test_location_lookup_serializes_and_parses_response() -> None:
