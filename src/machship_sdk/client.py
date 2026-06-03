@@ -663,17 +663,19 @@ class MachShipClient:
         self,
         *,
         since_date_created_utc: str | None = None,
+        consignment_ids: list[int] | None = None,
     ) -> ConsignmentIdWithTrackingHistoryV2IEnumerableBaseDomainEntity:
-        """Retrieve consignment statuses since a given date.
+        """Retrieve consignment statuses.
 
         Args:
             since_date_created_utc: Optional filter for date created in UTC.
+            consignment_ids: Consignment IDs to fetch statuses for.
         """
         return self.request(
             "POST",
             "/apiv2/consignments/returnConsignmentStatuses",
             params={"sinceDateCreatedUtc": since_date_created_utc},
-            json={},
+            json={"consignmentIds": consignment_ids} if consignment_ids is not None else {},
             response_model=(
                 ConsignmentIdWithTrackingHistoryV2IEnumerableBaseDomainEntity
             ),
