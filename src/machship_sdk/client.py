@@ -20,7 +20,7 @@ from ._version import __version__
 from .config import MachShipConfig
 from .exceptions import MachShipError, MachShipHTTPError
 from .retries import RetryPolicy, run_sync_with_retry
-from .serialization import dump_json_payload, load_json_payload
+from .serialization import load_json_payload
 from ._logging import emit_log
 from .telemetry import request_span, set_span_attributes
 from .models.generated import (
@@ -672,7 +672,11 @@ class MachShipClient:
             "POST",
             "/apiv2/consignments/returnConsignmentStatuses",
             params={"sinceDateCreatedUtc": since_date_created_utc},
-            json={"ConsignmentIds": consignment_ids} if consignment_ids is not None else {},
+            json=(
+                {"ConsignmentIds": consignment_ids}
+                if consignment_ids is not None
+                else {}
+            ),
             response_model=(
                 ConsignmentIdWithTrackingHistoryV2IEnumerableBaseDomainEntity
             ),
