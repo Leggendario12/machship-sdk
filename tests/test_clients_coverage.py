@@ -224,6 +224,7 @@ def _assert_machship_wrapper_paths(
         "/apiv2/consignments/createConsignmentwithComplexItems",
         "/apiv2/consignments/getConsignment",
         "/apiv2/consignments/returnConsignmentStatuses",
+        "/apiv2/consignments/returnConsignmentStatuses",
         "/apiv2/consignments/updateConsignmentStatuses",
         "/apiv2/labels/getConsignmentPdfFileInfo",
         "/apiv2/labels/getConsignmentPdfFileInfo",
@@ -405,6 +406,9 @@ def test_machship_client_from_env_and_wrappers(monkeypatch) -> None:
         assert client.return_consignment_statuses(
             since_date_created_utc="2026-01-01",
         )["path"] == "/apiv2/consignments/returnConsignmentStatuses"
+        assert client.return_consignment_statuses(
+            consignment_ids=[1, 2, 3],
+        )["path"] == "/apiv2/consignments/returnConsignmentStatuses"
         assert client.update_consignment_statuses(
             _machship_manual_tracking_statuses(),
         )["path"] == "/apiv2/consignments/updateConsignmentStatuses"
@@ -563,6 +567,11 @@ def test_async_machship_client_from_env_and_wrappers(monkeypatch) -> None:
             assert (
                 await client.return_consignment_statuses(
                     since_date_created_utc="2026-01-01",
+                )
+            )["path"] == "/apiv2/consignments/returnConsignmentStatuses"
+            assert (
+                await client.return_consignment_statuses(
+                    consignment_ids=[1, 2, 3],
                 )
             )["path"] == "/apiv2/consignments/returnConsignmentStatuses"
             assert (
