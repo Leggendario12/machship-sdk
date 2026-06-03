@@ -671,15 +671,16 @@ class AsyncMachShipClient:
             since_date_created_utc: Optional filter for date created in UTC.
             consignment_ids: Consignment IDs to fetch statuses for.
         """
+        params: dict[str, Any] = {}
+        if since_date_created_utc is not None:
+            params["sinceDateCreatedUtc"] = since_date_created_utc
+        if consignment_ids is not None:
+            params["ConsignmentIds"] = consignment_ids
         return await self.request(
             "POST",
             "/apiv2/consignments/returnConsignmentStatuses",
-            params={"sinceDateCreatedUtc": since_date_created_utc},
-            json=(
-                {"ConsignmentIds": consignment_ids}
-                if consignment_ids is not None
-                else {}
-            ),
+            params=params,
+            json={},
             response_model=(
                 ConsignmentIdWithTrackingHistoryV2IEnumerableBaseDomainEntity
             ),
