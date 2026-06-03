@@ -676,6 +676,7 @@ class AsyncMachShipClient:
             "POST",
             "/apiv2/consignments/returnConsignmentStatuses",
             params={"sinceDateCreatedUtc": since_date_created_utc},
+            json={},
             response_model=(
                 ConsignmentIdWithTrackingHistoryV2IEnumerableBaseDomainEntity
             ),
