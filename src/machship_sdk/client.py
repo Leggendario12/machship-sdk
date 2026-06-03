@@ -9,6 +9,7 @@ from time import perf_counter
 import httpx
 
 from ._core import (
+    _jsonable,
     build_headers,
     build_url,
     maybe_raise_for_api_errors,
@@ -145,11 +146,7 @@ class MachShipClient:
             "headers": request_headers,
         }
         if json is not None:
-            request_kwargs["content"] = dump_json_payload(json)
-            request_kwargs["headers"] = {
-                **request_headers,
-                "content-type": "application/json",
-            }
+            request_kwargs["json"] = _jsonable(json)
         return url, request_kwargs
 
     def close(self) -> None:
