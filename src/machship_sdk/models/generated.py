@@ -352,9 +352,10 @@ class CompanyTier(MachShipBaseModel):
 
 class CompanyType(IntEnum):
     """
-    1 = System, 2 = Reseller, 3 = Broker, 4 = Client, 5 = Enterprise
+    0 = Unspecified (returned by getCompleted, not in the published schema), 1 = System, 2 = Reseller, 3 = Broker, 4 = Client, 5 = Enterprise
     """
 
+    integer_0 = 0
     integer_1 = 1
     integer_2 = 2
     integer_3 = 3
