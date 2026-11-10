@@ -12079,6 +12079,7 @@
       },
       "CompanyType": {
         "enum": [
+          0,
           1,
           2,
           3,
@@ -12086,7 +12087,7 @@
           5
         ],
         "type": "integer",
-        "description": "1 = System, 2 = Reseller, 3 = Broker, 4 = Client, 5 = Enterprise",
+        "description": "0 = Unspecified (returned by getCompleted, not in the published schema), 1 = System, 2 = Reseller, 3 = Broker, 4 = Client, 5 = Enterprise",
         "format": "int32"
       },
       "CompanyV2": {
